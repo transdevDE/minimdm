@@ -214,8 +214,10 @@ TEST_DATABASE_URL=postgresql://minimdm:your_password@localhost:5432/minimdm_test
 - Deleting a permission removes the row
 - Non-admin users are blocked from schemas they have no grant for
 - Read-only users cannot write
-
-> **Note:** the publish/retire authorization boundary (`can_publish`) is not yet covered — see Known test gaps below.
+- A write-only (Editor) permission is blocked from `/publish` and `/retire` (403)
+- A `can_publish=true` (Publisher) user succeeds at both `/publish` and `/retire`
+- Granting `can_publish` alone also sets `can_write` (publish implies write)
+- A real Publisher-role user is still blocked by `allow_direct_active_import: false` (role doesn't override the object-level flag)
 
 **`test_api_import_export.py`**
 - Export CSV, TSV, and JSON (empty table and with data)
@@ -259,12 +261,6 @@ Each integration test that creates or modifies data requests the `clean_records`
 
 Found via a full coverage audit: the v0.5.0 manual test plan cross-checked against the automated suite, plus a broader sweep of API/UI surfaces. To be closed before the next release. Grouped by priority.
 
-### Publish/retire authorization — untested, highest priority
-`can_publish` has zero references anywhere in `tests/`. No test verifies:
-- A write-only (Editor) permission is blocked from `/publish` or `/retire` (expect 403)
-- A `can_publish=true` user succeeds on both
-- `allow_direct_active_import: false` still blocks a Publisher (role doesn't override the object-level flag)
-
 ### Backend behavior — no coverage at any level
 - **Rate limiting**: none of the 10/min login, 10/min import, or 120/min inbound limits are ever driven to a 429.
 - **Security headers**: `SecurityHeadersMiddleware` output (CSP, `X-Frame-Options`, `X-Content-Type-Options`) is never asserted.
@@ -287,4 +283,4 @@ Found via a full coverage audit: the v0.5.0 manual test plan cross-checked again
 - Deleted-reference display-name resolution and "deleted" badge when a record references a soft-deleted record — the `include_deleted` primitive is tested on the record's own endpoint, but not the display-time resolution behavior on a referencing record.
 
 ### Documentation debt
-This table previously claimed `test_api_permissions.py` covers "Editors cannot publish" — it doesn't (see above). If you add tests for a gap listed here, update the relevant table entry in the same PR so this file stays accurate.
+If you add tests for a gap listed here, update the relevant table entry in the same PR so this file stays accurate.
