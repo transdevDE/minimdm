@@ -1,0 +1,42 @@
+minimdm:
+
+  # --- Webhooks (optional) ---
+  # miniMDM can notify external systems when lifecycle events occur.
+  # Three events are supported:
+  #   record.created    — a new record was created directly as active
+  #   record.published  — a draft was promoted to active
+  #   record.retired    — an active record was transitioned to retired
+  # Multiple URLs can be registered for the same event.
+  # Delivery is asynchronous; failures are logged but never affect the API caller.
+  #
+  # webhooks:
+  #   - event: record.created
+  #     url: https://example.com/hooks/minimdm
+  #   - event: record.published
+  #     url: https://example.com/hooks/minimdm
+  #   - event: record.retired
+  #     url: https://example.com/hooks/minimdm
+
+  schemas:
+    datenmanagement:
+      objects:
+        mandant:
+          name: Mandant
+          description: Beinhaltet alle von der TDV betreuten Mandanten
+          owner: Datenmanagement       # Who is responsible for this object type
+          steward: robert.schwarm@transdev.de  # Who maintains data quality day-to-day
+          attributes:
+            MandantId:
+              name: Mandant-ID
+              type: integer
+              required: true
+              unique: true
+            MandantName:
+              name: Mandant-Name
+              type: string
+              required: true
+              unique: true
+            MandantNameLang:
+              name: Mandant-Langname
+              type: text
+              required: true
